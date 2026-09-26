@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IMS - Inventory Management System</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css"
+</head>
+
+<body>
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<div id="authScreen">
+
+    <div class="auth-container">
+
+        <div class="brand-large">
+            <div class="brand-icon">I</div>
+            <h1>InventoryPro</h1>
+            <p>Inventory Management System</p>
+        </div>
+
+        <!-- PHONE -->
+
+        <div id="phoneStep">
+
+            <h2>Welcome back</h2>
+            <p class="muted">
+                Sign in or create your account
+            </p>
+
+            <label>Mobile Number</label>
+
+            <input
+                type="tel"
+                id="phoneInput"
+                placeholder="10 digit mobile number"
+                maxlength="10"
+            >
+
+            <button class="primary-btn" onclick="sendOTP()">
+                Send OTP
+            </button>
+
+            <p id="authMessage"></p>
+
+        </div>
+
+
+        <!-- OTP -->
+
+        <div id="otpStep" class="hidden">
+
+            <h2>Verify your number</h2>
+
+            <p class="muted">
+                Enter the OTP sent to
+                <strong id="displayPhone"></strong>
+            </p>
+
+            <input
+                type="text"
+                id="otpInput"
+                placeholder="Enter 6 digit OTP"
+                maxlength="6"
+            >
+
+            <button class="primary-btn" onclick="verifyOTP()">
+                Verify & Continue
+            </button>
+
+            <button
+                class="text-btn"
+                onclick="changePhone()"
+            >
+                Change number
+            </button>
+
+            <p id="otpMessage"></p>
+
+            <div class="demo-otp">
+                Demo OTP: <strong>123456</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     APPLICATION
+===================================================== -->
+
+<div id="app" class="hidden">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-icon small">
+                I
+            </div>
+
+            <div>
+                <strong>InventoryPro</strong>
+                <span>Management System</span>
+            </div>
+
+        </div>
+
+
+        <nav>
+
+            <p class="nav-title">MAIN</p>
+
+            <button
+                class="nav-item active"
+                onclick="showPage('dashboard', this)"
+            >
+                <span>▦</span>
+                Dashboard
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showPage('products', this)"
+            >
+                <span>□</span>
+                Products
+            </button>
+
+
+            <p class="nav-title">OPERATIONS</p>
+
+            <button
+                class="nav-item"
+                onclick="showPage('receipts', this)"
+            >
+                <span>↓</span>
+                Receipts
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showPage('deliveries', this)"
+            >
+                <span>↑</span>
+                Delivery Orders
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showPage('transfers', this)"
+            >
+                <span>⇄</span>
+                Internal Transfers
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showPage('adjustments', this)"
+            >
+                <span>±</span>
+                Adjustments
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showPage('ledger', this)"
+            >
+                <span>☷</span>
+                Stock Ledger
+            </button>
+
+
+            <p class="nav-title">SETTINGS</p>
+
+            <button
+                class="nav-item"
+                onclick="showPage('warehouses', this)"
+            >
+                <span>⌂</span>
+                Warehouses
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showPage('profile', this)"
+            >
+                <span>◯</span>
+                My Profile
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <button
+                class="logout-btn"
+                onclick="logout()"
+            >
+                ⇥ Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN AREA -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <button
+                    class="mobile-menu"
+                    onclick="toggleSidebar()"
+                >
+                    ☰
+                </button>
+
+                <span id="pageTitle">
+                    Dashboard
+                </span>
+
+            </div>
+
+
+            <div class="user-area">
+
+                <div class="notification">
+                    🔔
+                    <span id="alertCount">0</span>
+                </div>
+
+                <div class="user-info">
+
+                    <div
+                        class="avatar"
+                        id="userAvatar"
+                    >
+                        U
+                    </div>
+
+                    <div>
+                        <strong id="userPhone">
+                            User
+                        </strong>
+
+                        <small>
+                            Inventory Manager
+                        </small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================= -->
+
+        <section id="dashboard" class="page-section">
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>
+                        Here's what's happening with your inventory today.
+                    </p>
+                </div>
+
+                <button
+                    class="primary-btn small-btn"
+                    onclick="showPageByName('products')"
+                >
+                    + Add Product
+                </button>
+
+            </div>
+
+
+            <!-- KPI CARDS -->
+
+            <div class="kpi-grid">
+
+                <div class="kpi-card blue">
+
+                    <div class="kpi-icon">
+                        📦
+                    </div>
+
+                    <div>
+                        <span>Total Products</span>
+                        <strong id="kpiProducts">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="kpi-card orange">
+
+                    <div class="kpi-icon">
+                        ⚠
+                    </div>
+
+                    <div>
+                        <span>Low Stock</span>
+                        <strong id="kpiLowStock">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="kpi-card red">
+
+                    <div class="kpi-icon">
+                        ⛔
+                    </div>
+
+                    <div>
+                        <span>Out of Stock</span>
+                        <strong id="kpiOutStock">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="kpi-card purple">
+
+                    <div class="kpi-icon">
+                        ↓
+                    </div>
+
+                    <div>
+                        <span>Pending Receipts</span>
+                        <strong id="kpiReceipts">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="kpi-card green">
+
+                    <div class="kpi-icon">
+                        ↑
+                    </div>
+
+                    <div>
+                        <span>Pending Deliveries</span>
+                        <strong id="kpiDeliveries">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="kpi-card cyan">
+
+                    <div class="kpi-icon">
+                        ⇄
+                    </div>
+
+                    <div>
+                        <span>Transfers</span>
+                        <strong id="kpiTransfers">0</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DASHBOARD LOWER -->
+
+            <div class="dashboard-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h2>Low Stock Alerts</h2>
+                            <p>Products that need attention</p>
+                        </div>
+
+                        <button
+                            class="link-btn"
+                            onclick="showPageByName('products')"
+                        >
+                            View all
+                        </button>
+
+                    </div>
+
+                    <div id="lowStockList"></div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h2>Recent Activity</h2>
+                            <p>Latest inventory movements</p>
+                        </div>
+
+                    </div>
+
+                    <div id="activityList"></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PRODUCTS
+        ================================================= -->
+
+        <section
+            id="products"
+            class="page-section hidden"
+        >
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Products</h1>
+                    <p>
+                        Manage products, SKUs and stock levels.
+                    </p>
+                </div>
+
+                <button
+                    class="primary-btn small-btn"
+                    onclick="openModal('productModal')"
+                >
+                    + Create Product
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="toolbar">
+
+                    <input
+                        type="text"
+                        id="productSearch"
+                        placeholder="🔍 Search product or SKU..."
+                        oninput="renderProducts()"
+                    >
+
+                    <select
+                        id="categoryFilter"
+                        onchange="renderProducts()"
+                    >
+                        <option value="">All Categories</option>
+                    </select>
+
+                    <select
+                        id="warehouseFilter"
+                        onchange="renderProducts()"
+                    >
+                        <option value="">All Locations</option>
+                    </select>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Product</th>
+                                <th>SKU</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Stock</th>
+                                <th>Reorder Level</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="productsTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             RECEIPTS
+        ================================================= -->
+
+        <section
+            id="receipts"
+            class="page-section hidden"
+        >
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Receipts</h1>
+                    <p>Manage incoming goods from suppliers.</p>
+                </div>
+
+                <button
+                    class="primary-btn small-btn"
+                    onclick="openModal('receiptModal')"
+                >
+                    + New Receipt
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="filter-row">
+
+                    <select onchange="filterTable('receiptsTable', this.value)">
+                        <option value="">All Statuses</option>
+                        <option value="Draft">Draft</option>
+                        <option value="Waiting">Waiting</option>
+                        <option value="Ready">Ready</option>
+                        <option value="Done">Done</option>
+                        <option value="Canceled">Canceled</option>
+                    </select>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Receipt</th>
+                                <th>Supplier</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Warehouse</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="receiptsTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             DELIVERIES
+        ================================================= -->
+
+        <section
+            id="deliveries"
+            class="page-section hidden"
+        >
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Delivery Orders</h1>
+                    <p>Manage outgoing customer shipments.</p>
+                </div>
+
+                <button
+                    class="primary-btn small-btn"
+                    onclick="openModal('deliveryModal')"
+                >
+                    + New Delivery
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Order</th>
+                                <th>Customer</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Warehouse</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="deliveriesTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TRANSFERS
+        ================================================= -->
+
+        <section
+            id="transfers"
+            class="page-section hidden"
+        >
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Internal Transfers</h1>
+                    <p>Move stock between warehouses and locations.</p>
+                </div>
+
+                <button
+                    class="primary-btn small-btn"
+                    onclick="openModal('transferModal')"
+                >
+                    + New Transfer
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Transfer</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="transfersTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ADJUSTMENTS
+        ================================================= -->
+
+        <section
+            id="adjustments"
+            class="page-section hidden"
+        >
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Inventory Adjustments</h1>
+                    <p>Correct stock after physical counts.</p>
+                </div>
+
+                <button
+                    class="primary-btn small-btn"
+                    onclick="openModal('adjustmentModal')"
+                >
+                    + New Adjustment
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Adjustment</th>
+                                <th>Product</th>
+                                <th>System Qty</th>
+                                <th>Counted Qty</th>
+                                <th>Difference</th>
+                                <th>Reason</th>
+                                <th>Date</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="adjustmentsTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             LEDGER
+        ================================================= -->
+
+        <section
+            id="ledger"
+            class="page-section hidden"
+        >
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Stock Ledger</h1>
+                    <p>Complete history of inventory movements.</p>
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="toolbar">
+
+                    <input
+                        type="text"
+                        id="ledgerSearch"
+                        placeholder="🔍 Search ledger..."
+                        oninput="renderLedger()"
+                    >
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Date</th>
+                                <th>Reference</th>
+                                <th>Product</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Quantity</th>
+                                <th>Balance</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="ledgerTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             WAREHOUSES
+        ================================================= -->
+
+        <section
+            id="warehouses"
+            class="page-section hidden"
+        >
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>Warehouses & Locations</h1>
+                    <p>Manage your storage locations.</p>
+                </div>
+
+                <button
+                    class="primary-btn small-btn"
+                    onclick="addWarehouse()"
+                >
+                    + Add Warehouse
+                </button>
+
+            </div>
+
+
+            <div
+                class="warehouse-grid"
+                id="warehouseGrid"
+            ></div>
+
+        </section>
+
+
+        <!-- =================================================
+             PROFILE
+        ================================================= -->
+
+        <section
+            id="profile"
+            class="page-section hidden"
+        >
+
+            <div class="page-heading">
+
+                <div>
+                    <h1>My Profile</h1>
+                    <p>Manage your account information.</p>
+                </div>
+
+            </div>
+
+
+            <div class="panel profile-panel">
+
+                <div class="profile-avatar">
+                    U
+                </div>
+
+                <h2 id="profilePhone">
+                    User
+                </h2>
+
+                <p>
+                    Inventory Manager
+                </p>
+
+                <hr>
+
+                <div class="profile-row">
+                    <span>Mobile Number</span>
+                    <strong id="profileNumber"></strong>
+                </div>
+
+                <div class="profile-row">
+                    <span>Role</span>
+                    <strong>Inventory Manager</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     PRODUCT MODAL
+===================================================== -->
+
+<div
+    id="productModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>Create Product</h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('productModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <label>Product Name</label>
+        <input id="newProductName" placeholder="Example: Steel Rod">
+
+
+        <label>SKU / Code</label>
+        <input id="newProductSKU" placeholder="Example: STL-001">
+
+
+        <label>Category</label>
+        <input id="newProductCategory" placeholder="Example: Raw Material">
+
+
+        <label>Unit of Measure</label>
+
+        <select id="newProductUnit">
+
+            <option>Units</option>
+            <option>Kg</option>
+            <option>Litres</option>
+            <option>Metres</option>
+            <option>Boxes</option>
+
+        </select>
+
+
+        <label>Initial Stock</label>
+
+        <input
+            id="newProductStock"
+            type="number"
+            min="0"
+            value="0"
+        >
+
+
+        <label>Reorder Level</label>
+
+        <input
+            id="newProductReorder"
+            type="number"
+            min="0"
+            value="10"
+        >
+
+
+        <label>Warehouse</label>
+
+        <select id="newProductWarehouse"></select>
+
+
+        <button
+            class="primary-btn"
+            onclick="createProduct()"
+        >
+            Create Product
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     RECEIPT MODAL
+===================================================== -->
+
+<div
+    id="receiptModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>New Receipt</h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('receiptModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <label>Supplier</label>
+
+        <input
+            id="receiptSupplier"
+            placeholder="Supplier name"
+        >
+
+
+        <label>Product</label>
+
+        <select id="receiptProduct"></select>
+
+
+        <label>Quantity Received</label>
+
+        <input
+            id="receiptQuantity"
+            type="number"
+            min="1"
+            value="1"
+        >
+
+
+        <label>Warehouse</label>
+
+        <select id="receiptWarehouse"></select>
+
+
+        <button
+            class="primary-btn"
+            onclick="createReceipt()"
+        >
+            Create Receipt
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     DELIVERY MODAL
+===================================================== -->
+
+<div
+    id="deliveryModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>New Delivery</h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('deliveryModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <label>Customer</label>
+
+        <input
+            id="deliveryCustomer"
+            placeholder="Customer name"
+        >
+
+
+        <label>Product</label>
+
+        <select id="deliveryProduct"></select>
+
+
+        <label>Quantity</label>
+
+        <input
+            id="deliveryQuantity"
+            type="number"
+            min="1"
+            value="1"
+        >
+
+
+        <label>Warehouse</label>
+
+        <select id="deliveryWarehouse"></select>
+
+
+        <button
+            class="primary-btn"
+            onclick="createDelivery()"
+        >
+            Create Delivery
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TRANSFER MODAL
+===================================================== -->
+
+<div
+    id="transferModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>Internal Transfer</h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('transferModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <label>Product</label>
+
+        <select id="transferProduct"></select>
+
+
+        <label>Quantity</label>
+
+        <input
+            id="transferQuantity"
+            type="number"
+            min="1"
+            value="1"
+        >
+
+
+        <label>From</label>
+
+        <select id="transferFrom"></select>
+
+
+        <label>To</label>
+
+        <select id="transferTo"></select>
+
+
+        <button
+            class="primary-btn"
+            onclick="createTransfer()"
+        >
+            Create Transfer
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ADJUSTMENT MODAL
+===================================================== -->
+
+<div
+    id="adjustmentModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>Inventory Adjustment</h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('adjustmentModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <label>Product</label>
+
+        <select
+            id="adjustmentProduct"
+            onchange="showCurrentStock()"
+        ></select>
+
+
+        <div
+            id="currentStockDisplay"
+            class="current-stock"
+        >
+            Current stock: 0
+        </div>
+
+
+        <label>Physical Count</label>
+
+        <input
+            id="adjustmentQuantity"
+            type="number"
+            min="0"
+            value="0"
+        >
+
+
+        <label>Reason</label>
+
+        <input
+            id="adjustmentReason"
+            placeholder="Damaged, lost, counting error..."
+        >
+
+
+        <button
+            class="primary-btn"
+            onclick="createAdjustment()"
+        >
+            Apply Adjustment
+        </button>
+
+    </div>
+
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
