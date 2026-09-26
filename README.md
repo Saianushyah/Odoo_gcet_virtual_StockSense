@@ -1,0 +1,1 @@
+# Odoo_gcet_virtual_StockSense
